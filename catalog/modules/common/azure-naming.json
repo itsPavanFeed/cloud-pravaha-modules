@@ -1,0 +1,49 @@
+{
+  "id": "azure-naming",
+  "title": "Azure resource naming",
+  "description": "Generates compliant, collision-free Azure resource names. Creates only random_string resources, so it needs no cloud credentials. It is also the module the end-to-end tests use.",
+  "source": "Azure/naming/azurerm",
+  "versions": [
+    "0.4.4"
+  ],
+  "providers": [
+    "hashicorp/random"
+  ],
+  "inputs": [
+    {
+      "name": "prefix",
+      "type": "list(string)",
+      "description": "Name parts placed before the resource abbreviation.",
+      "item_pattern": "^[a-z0-9]{1,10}$",
+      "max_items": 3
+    },
+    {
+      "name": "suffix",
+      "type": "list(string)",
+      "description": "Name parts placed after the resource abbreviation.",
+      "item_pattern": "^[a-z0-9]{1,10}$",
+      "max_items": 3
+    },
+    {
+      "name": "unique-length",
+      "type": "number",
+      "description": "Length of the random unique suffix.",
+      "default": 4,
+      "min": 1,
+      "max": 8
+    },
+    {
+      "name": "unique-include-numbers",
+      "type": "bool",
+      "description": "Allow digits in the unique suffix.",
+      "default": true
+    }
+  ],
+  "outputs": [
+    "resource_group",
+    "storage_account",
+    "key_vault",
+    "virtual_network",
+    "unique-seed"
+  ]
+}

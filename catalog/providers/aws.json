@@ -1,0 +1,6 @@
+{
+  "registry": "registry.opentofu.org",
+  "providers": [
+    {"source": "hashicorp/aws", "version": "6.70.0"}
+  ]
+}

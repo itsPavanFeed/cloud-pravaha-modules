@@ -1,0 +1,26 @@
+name: verify-catalog
+on:
+  push:
+  pull_request:
+  schedule: [{ cron: "0 6 * * 1" }]   # weekly: catch yanked or missing registry versions
+permissions: { contents: read }
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: cloud-pravaha-modules }
+      - uses: actions/checkout@v4
+        with: { repository: itsPavanFeed/cloud-pravaha-backend, path: cloud-pravaha-backend }
+      - uses: actions/setup-go@v5
+        with: { go-version-file: cloud-pravaha-backend/go.mod, cache-dependency-path: cloud-pravaha-backend/go.sum }
+      - name: Validate catalog and check every pin on registry.opentofu.org
+        working-directory: cloud-pravaha-backend
+        run: go run ./cmd/pravaha catalog verify -dir ../cloud-pravaha-modules/catalog -online
+      - name: Reject HCL in this repository (public modules only)
+        working-directory: cloud-pravaha-modules
+        run: |
+          if git ls-files | grep -E '\.(tf|tofu|tf\.json|tofu\.json|hcl)$'; then
+            echo "This repository must not contain module code; reference public registry modules in catalog/ instead." >&2
+            exit 1
+          fi

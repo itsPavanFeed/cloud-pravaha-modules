@@ -1,0 +1,12 @@
+# Catalog changes widen what can run in customer clouds, so each provider folder
+# has its own reviewers. Replace the handles with the owning teams, e.g.
+# @org/aws-platform, and require code-owner review on the default branch.
+*                               @itsPavanFeed
+/catalog/providers/aws.json     @itsPavanFeed
+/catalog/modules/aws/           @itsPavanFeed
+/catalog/providers/gcp.json     @itsPavanFeed
+/catalog/modules/gcp/           @itsPavanFeed
+/catalog/providers/azure.json   @itsPavanFeed
+/catalog/modules/azure/         @itsPavanFeed
+/catalog/providers/common.json  @itsPavanFeed
+/catalog/modules/common/        @itsPavanFeed

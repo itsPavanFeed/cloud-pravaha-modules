@@ -1,0 +1,66 @@
+{
+  "id": "cloudposse-label",
+  "title": "Consistent naming and tags",
+  "description": "Builds a consistent ID and tag map from namespace, environment, stage and name. Creates no resources.",
+  "source": "cloudposse/label/null",
+  "versions": [
+    "0.25.0"
+  ],
+  "providers": [],
+  "inputs": [
+    {
+      "name": "namespace",
+      "type": "string",
+      "description": "Organisation or product short name.",
+      "pattern": "^[a-z0-9]{1,12}$"
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "description": "Region or environment short code.",
+      "pattern": "^[a-z0-9]{1,12}$"
+    },
+    {
+      "name": "stage",
+      "type": "string",
+      "description": "Stage such as dev, staging or prod.",
+      "allowed": [
+        "dev",
+        "test",
+        "staging",
+        "prod"
+      ]
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "description": "Component name.",
+      "required": true,
+      "pattern": "^[a-z0-9-]{1,32}$"
+    },
+    {
+      "name": "delimiter",
+      "type": "string",
+      "description": "Separator between ID parts.",
+      "allowed": [
+        "-",
+        "_",
+        ""
+      ],
+      "default": "-"
+    },
+    {
+      "name": "tags",
+      "type": "map(string)",
+      "description": "Extra tags merged into the output tag map."
+    }
+  ],
+  "outputs": [
+    "id",
+    "tags",
+    "namespace",
+    "environment",
+    "stage",
+    "name"
+  ]
+}
