@@ -1,0 +1,109 @@
+{
+  "id": "azure-aks",
+  "title": "Azure AKS cluster (AVM)",
+  "description": "Azure Verified Module AKS: private API server, Entra ID with Azure RBAC, local accounts disabled, OIDC issuer and workload identity, automatic upgrades, telemetry off.",
+  "source": "Azure/avm-res-containerservice-managedcluster/azurerm",
+  "versions": [
+    "0.8.5"
+  ],
+  "providers": [
+    "Azure/azapi",
+    "Azure/modtm",
+    "hashicorp/random"
+  ],
+  "dependencies": [
+    {
+      "source": "Azure/avm-utl-interfaces/azure",
+      "versions": [
+        "0.7.0"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "name": "name",
+      "type": "string",
+      "description": "Cluster name.",
+      "required": true,
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}$"
+    },
+    {
+      "name": "location",
+      "type": "string",
+      "description": "Azure region.",
+      "required": true,
+      "pattern": "^[a-z0-9]{3,30}$"
+    },
+    {
+      "name": "parent_id",
+      "type": "string",
+      "description": "Resource group ID.",
+      "required": true,
+      "pattern": "^/subscriptions/[0-9a-f-]{36}/resourceGroups/[A-Za-z0-9._()-]{1,90}$"
+    },
+    {
+      "name": "kubernetes_version",
+      "type": "string",
+      "description": "Kubernetes version.",
+      "pattern": "^1\\.[0-9]{2}(\\.[0-9]+)?$"
+    },
+    {
+      "name": "default_agent_pool",
+      "type": "json",
+      "required": true,
+      "description": "System node pool (name, vm_size, count, vnet_subnet_id...)."
+    },
+    {
+      "name": "agent_pools",
+      "type": "json",
+      "description": "Additional node pools."
+    },
+    {
+      "name": "network_profile",
+      "type": "json",
+      "description": "Network profile (network_plugin, network_policy, service_cidr...)."
+    },
+    {
+      "name": "sku",
+      "type": "json",
+      "description": "SKU {name, tier}."
+    },
+    {
+      "name": "tags",
+      "type": "map(string)",
+      "description": "Tags."
+    }
+  ],
+  "enforced": {
+    "enable_telemetry": false,
+    "disable_local_accounts": true,
+    "enable_rbac": true,
+    "public_network_access": "Disabled",
+    "api_server_access_profile": {
+      "enable_private_cluster": true,
+      "disable_run_command": true
+    },
+    "aad_profile": {
+      "managed": true,
+      "enable_azure_rbac": true
+    },
+    "oidc_issuer_profile": {
+      "enabled": true
+    },
+    "security_profile": {
+      "workload_identity": {
+        "enabled": true
+      }
+    },
+    "auto_upgrade_profile": {
+      "upgrade_channel": "patch",
+      "node_os_upgrade_channel": "NodeImage"
+    }
+  },
+  "outputs": [
+    "resource_id",
+    "name",
+    "fqdn",
+    "current_kubernetes_version"
+  ]
+}

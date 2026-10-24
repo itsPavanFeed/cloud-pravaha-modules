@@ -1,0 +1,114 @@
+{
+  "id": "gcp-cloud-sql-postgres",
+  "title": "GCP Cloud SQL for PostgreSQL",
+  "description": "Cloud SQL PostgreSQL on a private IP only (no public IPv4), TLS required, regional HA, point-in-time recovery and deletion protection.",
+  "source": "terraform-google-modules/sql-db/google//modules/postgresql",
+  "versions": [
+    "28.3.0"
+  ],
+  "providers": [
+    "hashicorp/google",
+    "hashicorp/google-beta",
+    "hashicorp/null",
+    "hashicorp/random"
+  ],
+  "inputs": [
+    {
+      "name": "project_id",
+      "type": "string",
+      "description": "GCP project ID.",
+      "required": true,
+      "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "description": "Instance name.",
+      "required": true,
+      "pattern": "^[a-z]([-a-z0-9]{0,61}[a-z0-9])?$"
+    },
+    {
+      "name": "database_version",
+      "type": "string",
+      "description": "Version, e.g. POSTGRES_17.",
+      "required": true,
+      "pattern": "^POSTGRES_[0-9]{2}$"
+    },
+    {
+      "name": "region",
+      "type": "string",
+      "description": "Region.",
+      "required": true,
+      "pattern": "^[a-z]+-[a-z]+[0-9]$"
+    },
+    {
+      "name": "tier",
+      "type": "string",
+      "description": "Machine tier.",
+      "default": "db-custom-2-7680",
+      "pattern": "^db-[a-z0-9-]{1,40}$"
+    },
+    {
+      "name": "private_network",
+      "type": "string",
+      "description": "Self link of the VPC with private services access.",
+      "required": true,
+      "into": "ip_configuration",
+      "pattern": "^(https://www\\.googleapis\\.com/compute/v1/)?projects/[a-z][a-z0-9-]{4,28}[a-z0-9]/global/networks/[a-z]([-a-z0-9]{0,61}[a-z0-9])?$"
+    },
+    {
+      "name": "db_name",
+      "type": "string",
+      "description": "Default database name.",
+      "pattern": "^[a-z][a-z0-9_]{0,62}$"
+    },
+    {
+      "name": "encryption_key_name",
+      "type": "string",
+      "description": "CMEK key resource name.",
+      "pattern": "^projects/[^/]+/locations/[^/]+/keyRings/[^/]+/cryptoKeys/[^/]+$"
+    },
+    {
+      "name": "user_labels",
+      "type": "map(string)",
+      "description": "Labels."
+    }
+  ],
+  "enforced": {
+    "deletion_protection": true,
+    "deletion_protection_enabled": true,
+    "availability_type": "REGIONAL",
+    "ip_configuration": {
+      "ipv4_enabled": false,
+      "ssl_mode": "ENCRYPTED_ONLY",
+      "authorized_networks": []
+    },
+    "backup_configuration": {
+      "enabled": true,
+      "point_in_time_recovery_enabled": true,
+      "retained_backups": 14,
+      "retention_unit": "COUNT"
+    },
+    "database_flags": [
+      {
+        "name": "log_connections",
+        "value": "on"
+      },
+      {
+        "name": "log_disconnections",
+        "value": "on"
+      },
+      {
+        "name": "cloudsql.enable_pgaudit",
+        "value": "on"
+      }
+    ],
+    "enable_default_user": false,
+    "disk_autoresize": true
+  },
+  "outputs": [
+    "instance_name",
+    "instance_connection_name",
+    "private_ip_address"
+  ]
+}

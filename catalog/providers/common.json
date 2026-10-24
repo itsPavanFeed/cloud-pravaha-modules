@@ -1,6 +1,29 @@
 {
   "registry": "registry.opentofu.org",
   "providers": [
-    {"source": "hashicorp/random", "version": "3.9.1"}
+    {
+      "source": "hashicorp/random",
+      "version": "3.9.1"
+    },
+    {
+      "source": "hashicorp/cloudinit",
+      "version": "2.4.1"
+    },
+    {
+      "source": "hashicorp/null",
+      "version": "3.3.2"
+    },
+    {
+      "source": "hashicorp/time",
+      "version": "0.14.2"
+    },
+    {
+      "source": "hashicorp/tls",
+      "version": "4.4.2"
+    },
+    {
+      "source": "hashicorp/kubernetes",
+      "version": "3.4.0"
+    }
   ]
 }
