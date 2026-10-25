@@ -1,0 +1,63 @@
+# Kind VPC: contracts use `kind: VPC`.
+# Inputs list what a contract may set (with kind defaults); enforced is the locked security baseline.
+kind: VPC
+id: aws-vpc
+title: AWS VPC
+description: VPC with public and private subnets, optional NAT. Flow logs are enforced on.
+source: terraform-aws-modules/vpc/aws
+versions:
+  - 6.7.3
+providers:
+  - hashicorp/aws
+inputs:
+  - name: name
+    type: string
+    required: true
+    description: VPC name.
+    pattern: ^[a-z0-9-]{1,48}$
+  - name: cidr
+    type: string
+    required: true
+    description: IPv4 CIDR block.
+    pattern: ^(\d{1,3}\.){3}\d{1,3}/(1[6-9]|2[0-8])$
+  - name: azs
+    type: list(string)
+    required: true
+    description: Availability zones.
+    item_pattern: ^[a-z]{2}-[a-z]+-\d[a-z]$
+    max_items: 6
+  - name: private_subnets
+    type: list(string)
+    description: Private subnet CIDRs.
+    item_pattern: ^(\d{1,3}\.){3}\d{1,3}/\d{1,2}$
+    max_items: 6
+  - name: public_subnets
+    type: list(string)
+    description: Public subnet CIDRs.
+    item_pattern: ^(\d{1,3}\.){3}\d{1,3}/\d{1,2}$
+    max_items: 6
+  - name: enable_nat_gateway
+    type: bool
+    description: Create NAT gateways for private subnets.
+    default: false
+  - name: single_nat_gateway
+    type: bool
+    description: Share one NAT gateway across all AZs.
+    default: true
+  - name: tags
+    type: map(string)
+    description: Tags for every resource.
+enforced:
+  create_flow_log_cloudwatch_iam_role: true
+  create_flow_log_cloudwatch_log_group: true
+  default_security_group_egress: []
+  default_security_group_ingress: []
+  enable_dns_hostnames: true
+  enable_flow_log: true
+  manage_default_security_group: true
+  map_public_ip_on_launch: false
+outputs:
+  - vpc_id
+  - vpc_cidr_block
+  - private_subnets
+  - public_subnets

@@ -1,0 +1,107 @@
+# Kind RDSDatabase: contracts use `kind: RDSDatabase`.
+# Inputs list what a contract may set (with kind defaults); enforced is the locked security baseline.
+kind: RDSDatabase
+id: aws-rds
+title: AWS RDS database
+description: Private, encrypted RDS instance with deletion protection, automated backups, IAM authentication and a Secrets Manager-managed master password.
+source: terraform-aws-modules/rds/aws
+versions:
+  - 7.2.2
+providers:
+  - hashicorp/aws
+  - hashicorp/random
+inputs:
+  - name: identifier
+    type: string
+    required: true
+    description: Instance identifier.
+    pattern: ^[a-z][a-z0-9-]{0,62}$
+  - name: engine
+    type: string
+    description: Engine.
+    default: postgres
+    allowed:
+      - postgres
+      - mysql
+      - mariadb
+  - name: engine_version
+    type: string
+    required: true
+    description: Engine version.
+    pattern: ^[0-9]+(\.[0-9]+){0,2}$
+  - name: family
+    type: string
+    required: true
+    description: Parameter group family, e.g. postgres17.
+    pattern: ^[a-z]+[0-9.]+$
+  - name: major_engine_version
+    type: string
+    description: Major version for the option group.
+    pattern: ^[0-9]+(\.[0-9]+)?$
+  - name: instance_class
+    type: string
+    required: true
+    description: Instance class.
+    pattern: ^db\.[a-z0-9]+\.[a-z0-9]+$
+  - name: allocated_storage
+    type: number
+    description: Storage in GiB.
+    default: 20
+    min: 20
+    max: 65536
+  - name: max_allocated_storage
+    type: number
+    description: Storage autoscaling ceiling in GiB (0 disables).
+    default: 100
+    min: 0
+    max: 65536
+  - name: db_name
+    type: string
+    description: Initial database name.
+    pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,62}$
+  - name: username
+    type: string
+    description: Master username.
+    default: pravaha_admin
+    pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,15}$
+  - name: multi_az
+    type: bool
+    description: Standby in another AZ.
+    default: true
+  - name: subnet_ids
+    type: list(string)
+    required: true
+    description: Private subnets for the DB subnet group.
+    item_pattern: ^subnet-[0-9a-f]{8,17}$
+    max_items: 16
+  - name: vpc_security_group_ids
+    type: list(string)
+    required: true
+    description: Security groups.
+    item_pattern: ^sg-[0-9a-f]{8,17}$
+    max_items: 5
+  - name: backup_retention_period
+    type: number
+    description: Days of automated backups.
+    default: 14
+    min: 7
+    max: 35
+  - name: tags
+    type: map(string)
+    description: Tags.
+enforced:
+  auto_minor_version_upgrade: true
+  copy_tags_to_snapshot: true
+  create_db_subnet_group: true
+  deletion_protection: true
+  iam_database_authentication_enabled: true
+  manage_master_user_password: true
+  performance_insights_enabled: true
+  publicly_accessible: false
+  skip_final_snapshot: false
+  storage_encrypted: true
+outputs:
+  - db_instance_endpoint
+  - db_instance_arn
+  - db_instance_identifier
+  - db_instance_master_user_secret_arn

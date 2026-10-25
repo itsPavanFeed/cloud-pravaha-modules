@@ -1,0 +1,9 @@
+# Providers allowlisted for this folder, pinned to exact versions.
+registry: registry.opentofu.org
+providers:
+  - source: Azure/azapi
+    version: 2.13.0
+  - source: Azure/modtm
+    version: 0.3.5
+  - source: hashicorp/azurerm
+    version: 4.81.0

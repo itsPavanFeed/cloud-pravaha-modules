@@ -1,7 +1,0 @@
-{
-  "registry": "registry.opentofu.org",
-  "providers": [
-    {"source": "hashicorp/google", "version": "8.8.0"},
-    {"source": "hashicorp/google-beta", "version": "8.8.0"}
-  ]
-}

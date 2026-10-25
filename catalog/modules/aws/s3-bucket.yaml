@@ -1,0 +1,44 @@
+# Kind S3Bucket: contracts use `kind: S3Bucket`.
+# Inputs list what a contract may set (with kind defaults); enforced is the locked security baseline.
+kind: S3Bucket
+id: aws-s3-bucket
+title: AWS S3 bucket
+description: Private, encrypted, versioned S3 bucket. Public access blocks, TLS-only access and bucket-owner object ownership are enforced.
+source: terraform-aws-modules/s3-bucket/aws
+versions:
+  - 5.17.0
+providers:
+  - hashicorp/aws
+inputs:
+  - name: bucket
+    type: string
+    required: true
+    description: Globally unique bucket name.
+    pattern: ^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$
+  - name: force_destroy
+    type: bool
+    description: Allow destroying a non-empty bucket.
+    default: false
+  - name: tags
+    type: map(string)
+    description: Tags for the bucket.
+enforced:
+  attach_deny_insecure_transport_policy: true
+  attach_require_latest_tls_policy: true
+  block_public_acls: true
+  block_public_policy: true
+  control_object_ownership: true
+  ignore_public_acls: true
+  object_ownership: BucketOwnerEnforced
+  restrict_public_buckets: true
+  server_side_encryption_configuration:
+    rule:
+      apply_server_side_encryption_by_default:
+        sse_algorithm: aws:kms
+      bucket_key_enabled: true
+  versioning:
+    enabled: "true"
+outputs:
+  - s3_bucket_id
+  - s3_bucket_arn
+  - s3_bucket_region

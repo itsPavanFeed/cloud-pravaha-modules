@@ -1,0 +1,11 @@
+# Acme's defaults for S3 buckets in every environment, tightened in production.
+apiVersion: pravaha/v1
+kind: Defaults
+target: S3Bucket
+spec:
+  force_destroy: true
+  tags:
+    cost-centre: acme-platform
+tiers:
+  prod:
+    force_destroy: false

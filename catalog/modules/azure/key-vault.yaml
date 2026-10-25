@@ -1,0 +1,66 @@
+# Kind KeyVault: contracts use `kind: KeyVault`.
+# Inputs list what a contract may set (with kind defaults); enforced is the locked security baseline.
+kind: KeyVault
+id: azure-key-vault
+title: Azure Key Vault (AVM)
+description: 'Azure Verified Module Key Vault: no public network access, firewall deny-by-default, Azure RBAC (no legacy access policies), purge protection and 90-day soft delete, telemetry off.'
+source: Azure/avm-res-keyvault-vault/azurerm
+versions:
+  - 0.12.0
+providers:
+  - Azure/azapi
+  - Azure/modtm
+  - hashicorp/azurerm
+  - hashicorp/random
+  - hashicorp/time
+inputs:
+  - name: name
+    type: string
+    required: true
+    description: Vault name.
+    pattern: ^[a-zA-Z][a-zA-Z0-9-]{1,22}[a-zA-Z0-9]$
+  - name: location
+    type: string
+    required: true
+    description: Azure region.
+    pattern: ^[a-z0-9]{3,30}$
+  - name: resource_group_name
+    type: string
+    required: true
+    description: Resource group name.
+    pattern: ^[A-Za-z0-9._()-]{1,90}$
+  - name: tenant_id
+    type: string
+    required: true
+    description: Entra tenant ID.
+    pattern: ^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$
+  - name: sku_name
+    type: string
+    description: SKU.
+    default: standard
+    allowed:
+      - standard
+      - premium
+  - name: virtual_network_subnet_ids
+    type: list(string)
+    description: Subnets allowed through the firewall.
+    item_pattern: ^/subscriptions/[0-9a-f-]{36}/resourceGroups/[^/]+/providers/Microsoft\.Network/virtualNetworks/[^/]+/subnets/[^/]+$
+    max_items: 20
+    into: network_acls
+  - name: tags
+    type: map(string)
+    description: Tags.
+enforced:
+  enable_telemetry: false
+  legacy_access_policies_enabled: false
+  network_acls:
+    bypass: AzureServices
+    default_action: Deny
+    ip_rules: []
+  public_network_access_enabled: false
+  purge_protection_enabled: true
+  soft_delete_retention_days: 90
+outputs:
+  - resource_id
+  - name
+  - uri

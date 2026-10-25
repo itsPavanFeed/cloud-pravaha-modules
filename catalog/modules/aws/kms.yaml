@@ -1,0 +1,33 @@
+# Kind KMSKey: contracts use `kind: KMSKey`.
+# Inputs list what a contract may set (with kind defaults); enforced is the locked security baseline.
+kind: KMSKey
+id: aws-kms
+title: AWS KMS key
+description: Customer-managed symmetric KMS key with annual rotation and a 30-day deletion window.
+source: terraform-aws-modules/kms/aws
+versions:
+  - 4.2.2
+providers:
+  - hashicorp/aws
+inputs:
+  - name: description
+    type: string
+    required: true
+    description: Key description.
+    pattern: ^[A-Za-z0-9 ._:/-]{1,200}$
+  - name: aliases
+    type: list(string)
+    description: Aliases (without alias/).
+    item_pattern: ^[a-zA-Z0-9/_-]{1,200}$
+    max_items: 10
+  - name: tags
+    type: map(string)
+    description: Tags.
+enforced:
+  deletion_window_in_days: 30
+  enable_key_rotation: true
+  is_enabled: true
+  key_usage: ENCRYPT_DECRYPT
+outputs:
+  - key_arn
+  - key_id

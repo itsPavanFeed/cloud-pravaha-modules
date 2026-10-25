@@ -1,0 +1,73 @@
+# Kind EKSCluster: contracts use `kind: EKSCluster`.
+# Inputs list what a contract may set (with kind defaults); enforced is the locked security baseline.
+kind: EKSCluster
+id: aws-eks
+title: AWS EKS cluster
+description: Private EKS control plane with secrets envelope-encrypted by a dedicated KMS key, IRSA, control-plane audit logs and API access entries (no aws-auth ConfigMap).
+source: terraform-aws-modules/eks/aws
+versions:
+  - 21.29.0
+providers:
+  - hashicorp/aws
+  - hashicorp/cloudinit
+  - hashicorp/null
+  - hashicorp/time
+  - hashicorp/tls
+dependencies:
+  - source: terraform-aws-modules/kms/aws
+    versions:
+      - 4.0.0
+inputs:
+  - name: name
+    type: string
+    required: true
+    description: Cluster name.
+    pattern: ^[a-zA-Z][a-zA-Z0-9-]{0,99}$
+  - name: kubernetes_version
+    type: string
+    required: true
+    description: Kubernetes minor version.
+    pattern: ^1\.[0-9]{2}$
+  - name: vpc_id
+    type: string
+    required: true
+    description: VPC ID.
+    pattern: ^vpc-[0-9a-f]{8,17}$
+  - name: subnet_ids
+    type: list(string)
+    required: true
+    description: Private subnet IDs for nodes and the control plane.
+    item_pattern: ^subnet-[0-9a-f]{8,17}$
+    max_items: 16
+  - name: eks_managed_node_groups
+    type: json
+    description: Managed node groups (instance_types, min_size, max_size, desired_size, ami_type...).
+  - name: enable_cluster_creator_admin_permissions
+    type: bool
+    description: Grant the deploying role cluster admin through an access entry.
+    default: false
+  - name: tags
+    type: map(string)
+    description: Tags.
+enforced:
+  authentication_mode: API
+  create_kms_key: true
+  enable_irsa: true
+  enable_kms_key_rotation: true
+  enabled_log_types:
+    - api
+    - audit
+    - authenticator
+    - controllerManager
+    - scheduler
+  encryption_config:
+    resources:
+      - secrets
+  endpoint_private_access: true
+  endpoint_public_access: false
+outputs:
+  - cluster_name
+  - cluster_endpoint
+  - cluster_arn
+  - cluster_oidc_issuer_url
+  - oidc_provider_arn

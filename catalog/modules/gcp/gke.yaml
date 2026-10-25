@@ -1,0 +1,88 @@
+# Kind GKECluster: contracts use `kind: GKECluster`.
+# Inputs list what a contract may set (with kind defaults); enforced is the locked security baseline.
+kind: GKECluster
+id: gcp-gke
+title: GCP GKE private cluster
+description: Private-node GKE cluster with shielded nodes, network policy, Workload Identity, a release channel and deletion protection. The default node pool is removed.
+source: terraform-google-modules/kubernetes-engine/google//modules/private-cluster
+versions:
+  - 46.0.0
+providers:
+  - hashicorp/google
+  - hashicorp/kubernetes
+  - hashicorp/random
+inputs:
+  - name: project_id
+    type: string
+    required: true
+    description: GCP project ID.
+    pattern: ^[a-z][a-z0-9-]{4,28}[a-z0-9]$
+  - name: name
+    type: string
+    required: true
+    description: Cluster name.
+    pattern: ^[a-z]([-a-z0-9]{0,61}[a-z0-9])?$
+  - name: region
+    type: string
+    required: true
+    description: Region.
+    pattern: ^[a-z]+-[a-z]+[0-9]$
+  - name: network
+    type: string
+    required: true
+    description: VPC network name.
+    pattern: ^[a-z]([-a-z0-9]{0,61}[a-z0-9])?$
+  - name: subnetwork
+    type: string
+    required: true
+    description: Subnetwork name.
+    pattern: ^[a-z]([-a-z0-9]{0,61}[a-z0-9])?$
+  - name: ip_range_pods
+    type: string
+    required: true
+    description: Secondary range name for pods.
+    pattern: ^[a-z]([-a-z0-9]{0,61}[a-z0-9])?$
+  - name: ip_range_services
+    type: string
+    required: true
+    description: Secondary range name for services.
+    pattern: ^[a-z]([-a-z0-9]{0,61}[a-z0-9])?$
+  - name: master_ipv4_cidr_block
+    type: string
+    required: true
+    description: /28 range for the control plane.
+    pattern: ^([0-9]{1,3}\.){3}[0-9]{1,3}/28$
+  - name: enable_private_endpoint
+    type: bool
+    description: Make the control plane reachable only privately.
+    default: true
+  - name: master_authorized_networks
+    type: json
+    description: List of {cidr_block, display_name} allowed to reach the control plane.
+  - name: release_channel
+    type: string
+    description: Release channel.
+    default: REGULAR
+    allowed:
+      - RAPID
+      - REGULAR
+      - STABLE
+  - name: node_pools
+    type: json
+    description: Node pools (name, machine_type, min_count, max_count...).
+  - name: cluster_resource_labels
+    type: map(string)
+    description: Labels.
+enforced:
+  deletion_protection: true
+  enable_binary_authorization: true
+  enable_private_nodes: true
+  enable_shielded_nodes: true
+  http_load_balancing: true
+  identity_namespace: enabled
+  network_policy: true
+  remove_default_node_pool: true
+outputs:
+  - cluster_id
+  - name
+  - endpoint

@@ -1,0 +1,9 @@
+# Acme's defaults for the AzureNaming kind. Contracts only set what differs.
+apiVersion: pravaha/v1
+kind: Defaults
+target: AzureNaming
+spec:
+  unique-length: 6
+tiers:
+  prod:
+    unique-length: 8
